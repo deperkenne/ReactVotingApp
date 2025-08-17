@@ -25,7 +25,7 @@ jobs:
       - name: Build Docker image (no push)
         uses: docker/build-push-action@v4
         with:
-          context: frontend-voting-app
+          context: .
           push: false
           tags: kennetchofo/frontend-voting-app:${{ github.sha }}
 

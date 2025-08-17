@@ -10,7 +10,7 @@ COPY . .
 
 ENV CHOKIDAR_USEPOLLING=true
 
-RUN npm run builder
+RUN npm run build
 
 # stage 2 - Serve
 

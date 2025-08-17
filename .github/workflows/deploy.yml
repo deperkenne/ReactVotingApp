@@ -1,0 +1,38 @@
+name: voting_app
+
+on:
+  push:
+    branches:
+      - main
+      - feature
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:          
+  docker:
+    name: Containerization
+    runs-on: ubuntu-latest
+    needs: unit-testing
+    steps:
+      - name: checkout Repo
+        uses: actions/checkout@v4
+      - name: Dockerhub Login
+        uses: docker/login-action@v2.2.0
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: front_voting_app
+          push: false
+          tags: kennetchofo/frontend-voting-app:${{ github.sha}}
+      - name: Docker Image Test
+        run: |
+          docker images
+          docker run --name votingApp kennetchofo/frontend-voting-app:${{ github.sha}}
+          echo see the container log
+          docker logs votingApp

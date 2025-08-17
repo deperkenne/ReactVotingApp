@@ -28,6 +28,8 @@ jobs:
           context: .
           push: true
           tags: kennetchofo/frontend-voting-app:${{ github.sha }}
+          build-args: |
+                VITE_APP_GOOGLE_CLIENT_ID=${{ vars.VITE_APP_GOOGLE_CLIENT_ID }}
 
       - name: Docker Image Test
         run: |

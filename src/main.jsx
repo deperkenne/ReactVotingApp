@@ -6,9 +6,16 @@ import Election from "./components/Home/CreateElection";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Apptest from './components/Home/Release.jsx';
 
+
+console.log("import.meta.env complet:", import.meta.env);
+
 createRoot(document.getElementById('root')).render(
   /*<StrictMode>*/
-    <App/>
+   <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+      <App/>
+   </GoogleOAuthProvider>
+   
+   
   /*</StrictMode>,*/
     /*<Election />*/
 )

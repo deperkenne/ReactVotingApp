@@ -85,10 +85,11 @@ useEffect(() => {
 
   }
 
-
    const loginWithGoogle = () => {
     window.location.href = "https://massive-primate-climbing.ngrok-free.app/loginwithgoogle";
   };
+
+  
 
   const sendLinkToSetupPass = async () => {
 

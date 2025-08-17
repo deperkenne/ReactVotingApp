@@ -56,6 +56,7 @@ const router = createBrowserRouter([
 
 
 function App() {
+  console.log("Google Client ID:", import.meta.env.REACT_APP_GOOGLE_CLIENT_ID);
   return  <RouterProvider router={router}/>
 }
 

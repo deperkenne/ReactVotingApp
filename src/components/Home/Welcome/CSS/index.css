@@ -1,0 +1,67 @@
+
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('fonts/MyCustomFont.woff2') format('woff2'),
+         url('fonts/MyCustomFont.woff') format('woff'),
+         url('fonts/MyCustomFont.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
+}
+
+
+
+body {
+    /* overflow: hidden; */
+    min-height: 100%;
+    font-family: Bold, Book, ExtraBold, Heavy, Light, Medium, Regular, SemiBold, 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+html {
+    overflow: hidden;
+    overflow: hidden !important;
+    height: 100%;
+    font-size: 93%;
+}
+
+@media (max-width: 600px) {
+    html {
+        font-size: 96%;
+    }
+}
+
+@media (max-width: 500px) {
+    html {
+        font-size: 90%;
+    }
+}
+
+@media (max-width: 400px) {
+    html {
+        font-size: 80%;
+    }
+}
+
+body {
+    /* overflow: auto; */
+    overflow-x: hidden !important;
+    height: 100%;
+    width:100% !important;
+    place-items: none;
+  
+    
+
+}
+
+p,
+span,
+h1,
+h2,
+h4,
+h5 {
+    word-break: break-word;
+}

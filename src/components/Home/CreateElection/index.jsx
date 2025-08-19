@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, Eye, Share2, BarChart3, Settings, Save, Users, Trophy,Check, Clock,  Vote, Maximize } from 'lucide-react';
+import { Plus, Trash2, Edit3, Eye, Share2, BarChart3, Settings, Save, Users, Trophy,Check, Clock,  Vote, Download, Maximize } from 'lucide-react';
 import './index.css';
 import LiveElection from '../LiveElection';
 import { useNavigate } from 'react-router-dom'; 
@@ -30,7 +30,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
       const [fileName,setFileName]  = useState(null)
       const [isAuthorizedFileExtention,setIsAuthorizedFileExtention] = useState(false)
       const [urlApi,setUrlApi] = useState("")
-      const [loadFileMessage,setLoadFileMessage] = useState({"errorSchema":"","errorsRow":""})
+      const [loadFileMessage,setLoadFileMessage] = useState({"errorSchema":"","errorsColType":[]})
       const  [messageToAnalyseFile,setMessageToAnalyseFile] = useState("")
       const[selectedOption,setSelectedOption] = useState([])
 
@@ -455,8 +455,10 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
 
             }
             const data = await res.json()
+            console.log("give me my data",data)
             
-            setLoadFileMessage({...loadFileMessage,errorSchema:data.error_schema,errorsRow:data.errors_row})
+            setLoadFileMessage({...loadFileMessage,errorSchema:data.schema_error,errorsColType:data.errors_col_type})
+
 
 
 
@@ -466,6 +468,26 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
 
     };
 
+   
+
+    const handleDownload = async () => {
+      try {
+        const response = await fetch("http://192.168.178.194:8000/download-errors");
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading file:", error);
+      }
+    };
 
 
 
@@ -524,6 +546,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
           listOption={listOption}
           selectedOption={selectedOption}
           setSelectedOption={setSelectedOption}
+          handleDownload={handleDownload}
 
         />
       </>
@@ -574,6 +597,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                             listOption,
                             selectedOption,
                             setSelectedOption,
+                            handleDownload
 
                       
                         }) => {
@@ -687,6 +711,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                    listOption = {listOption}
                    selectedOption = {selectedOption}
                    setSelectedOption = {setSelectedOption}
+                   handleDownload= {handleDownload}
               />
 
               <CreateNewCandidat 
@@ -920,6 +945,13 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
   }
 
 
+  const DownloadFile = ({handleDownload}) => {
+      return <button onClick={handleDownload} className="save-election-btn">
+                 <Download className="icon-sm" /> error file
+             </button>
+  }
+
+
   const CloseOrOpen = ({isOpen,setIsOpen,addType}) => {
 
       
@@ -951,6 +983,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                                      listOption,
                                      selectedOption,
                                      setSelectedOption,
+                                     handleDownload,
                                     }) => {
         
          const [isOpen, setIsOpen] = useState(false);
@@ -972,6 +1005,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                           listOption={listOption}
                           selectedOption={selectedOption}
                           setSelectedOption={setSelectedOption}
+                          handleDownload={handleDownload}
                    
                         />
                         <AddCandidatWithApi setUrlApi={setUrlApi} urlApi={urlApi}/>
@@ -1022,6 +1056,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                                  listOption,
                                  selectedOption,
                                  setSelectedOption,
+                                 handleDownload
                                 }) => {
 
     const [isYes,setIsYes] = useState(false)
@@ -1035,7 +1070,7 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
           const file = e.target.files[0];
           if (file) {
             setFileName(file);
-            setLoadFileMessage({...loadFileMessage,errorSchema:"",errorsRow:""})
+            setLoadFileMessage({...loadFileMessage,errorSchema:"",errorsColType:[]})
           } 
     };
 
@@ -1075,8 +1110,10 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
 
 
                       {isAuthorizedFileExtention&&<p style={{color:"red"}}>this file is not authorized give csv or json or excell file!!</p>}
-                      {loadFileMessage.errorSchema&&<div>
-                                                          <p style={{color:"red"}}> {loadFileMessage.errorSchema}</p>
+                      {loadFileMessage.errorSchema || loadFileMessage.errorsColType&&<div>
+                                                          <p style={{color:"red"}}> {loadFileMessage.errorSchema?loadFileMessage.errorSchema:""}</p>
+                                                          <p style={{color:"red"}}> {loadFileMessage.errorsColType?"error column typ and to see all error download errors file":""}</p>
+                                                          <DownloadFile handleDownload={handleDownload}/>
                                                           <p style={{color:"green"}}>do you want that we anlyse your file with correct schema ? <span onClick={analyseFile}>YES</span> <span onClick={analyseFile1}>NO</span> </p>
 
                                                           {isYes?
@@ -1260,7 +1297,16 @@ const Election =  ({listElection = 'create', user={} ,isFromLogin=false}) => {
                       </label>
 
                       {/* nom du fichier ou placeholder personnalisé */}
-                      <p className="file-name">{newCandidate.photo.name} </p>
+                       <p className="file-name">{newCandidate.photo ? newCandidate.photo.name : "No file selected"}</p>
+
+                            {/* Aperçu de l’image */}
+                        {newCandidate.photo && (
+                          <img
+                            src={URL.createObjectURL(newCandidate.photo)}
+                            alt="Preview"
+                            style={{ width: 200, height: 200, objectFit: "cover", marginTop: 10 }}
+                          />
+                        )}
                     </div>
                   
                   </div>
